@@ -5,7 +5,6 @@ const crypto = require('crypto');
 const { ExpressPeerServer } = require('peer');
 const { v4: uuidv4 } = require('uuid');
 const { Server } = require('socket.io'); 
-const { WebSocketServer } = require('ws');
 const xss = require('xss');             
 
 const PORT = process.env.PORT || 8080;
@@ -46,31 +45,6 @@ function parseSocketIoTransports(value) {
 
 function parseBoolean(value) {
     return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
-}
-
-function getRequestPath(url) {
-    try {
-        return new URL(url || '/', 'http://localhost').pathname;
-    } catch {
-        return '/';
-    }
-}
-
-function createRoutedWebSocketServer({ server, path }) {
-    const wss = new WebSocketServer({
-        noServer: true,
-        perMessageDeflate: false
-    });
-
-    server.on('upgrade', (req, socket, head) => {
-        if (getRequestPath(req.url) !== path) return;
-
-        wss.handleUpgrade(req, socket, head, (ws) => {
-            wss.emit('connection', ws, req);
-        });
-    });
-
-    return wss;
 }
 
 function disableEngineIoCompression(engineSocket) {
@@ -132,6 +106,7 @@ const app = express();
 app.set('trust proxy', true);
 
 const defaultAllowedOrigins = [
+    "https://chat.arksec.net",
     "https://player.arksec.net",
     "https://game.arksec.net"
 ];
@@ -386,8 +361,7 @@ const peerServer = ExpressPeerServer(server, {
     proxied: true, 
     generateClientId: () => uuidv4(),
     path: PEER_SERVER_PATH,
-    corsOptions,
-    createWebSocketServer: createRoutedWebSocketServer
+    corsOptions
 });
 
 app.use(PEER_MOUNT_PATH, peerServer);
