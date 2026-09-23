@@ -132,6 +132,7 @@ const app = express();
 app.set('trust proxy', true);
 
 const defaultAllowedOrigins = [
+    "https://chat.arksec.net",
     "https://player.arksec.net",
     "https://game.arksec.net"
 ];
