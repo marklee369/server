@@ -107,8 +107,7 @@ app.set('trust proxy', true);
 
 const defaultAllowedOrigins = [
     "https://chat.arksec.net",
-    "https://player.arksec.net",
-    "https://game.arksec.net"
+    "https://happy.arksec.net"
 ];
 
 const allowedOrigins = (process.env.CORS_ORIGINS || defaultAllowedOrigins.join(','))
@@ -213,15 +212,14 @@ const server = http.createServer(app);
 const io = new Server(server, {
   path: SOCKET_IO_PATH,
   cors: corsOptions,
-  transports: ['websocket'],
-  allowUpgrades: false,
+  transports: SOCKET_IO_TRANSPORTS,
+  allowUpgrades: true,
   allowEIO3: false,
   pingTimeout: 60000,
   pingInterval: 25000,
   maxHttpBufferSize: MAX_PAYLOAD_SIZE,
   perMessageDeflate: false,
-  httpCompression: false,
-  wsEngine: require('ws').Server 
+  httpCompression: false 
 });
 
 
